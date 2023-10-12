@@ -33,6 +33,7 @@ class ServiceController extends Controller
      */
     public function create(StoreServiceRequest $request)
     {
+        //
     }
 
     public function fastStore(StoreServiceRequest $request)
@@ -63,7 +64,6 @@ class ServiceController extends Controller
             $conflictingReservation = Reservation::query()->where(function ($query) use ($start_at, $end_at) {
                 $query->whereBetween('start_at', [$start_at, $end_at])
                     ->orWhereBetween('end_at', [$start_at, $end_at]);
-                ;
             })->where('day','=', $day,)->where('place_id', '=', $place)->first();
             $is_open = Schedule::query()->where('open_at' ,'>', $start_at, 'AND', 'close_at', '<', $end_at)->get();
 //            dd($is_open);

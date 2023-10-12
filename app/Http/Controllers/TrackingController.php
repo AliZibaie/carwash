@@ -61,7 +61,7 @@ class TrackingController extends Controller
         $reserve = Reservation::find($reserve_id);
         $time = Carbon::parse($reserve->start_at);
         $time = $time->toDateTimeString();
-        return view('dashborad.edit', compact("reserve", 'reserve_id', 'time'));
+        return view('tracking.edit', compact("reserve", 'reserve_id', 'time'));
     }
 
     /**
