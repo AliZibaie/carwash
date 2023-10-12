@@ -77,6 +77,10 @@ class ServiceController extends Controller
         DB::table('service_user')->insert(['service_id'=>$service_id, 'user_id'=>$user_id]);
         return $this->factor($service, $code);
     }
+    public static function __callStatic(string $name, array $arguments)
+    {
+        return call_user_func($name);
+    }
 
     public function factor($service, $code)
     {

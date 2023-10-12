@@ -12,11 +12,13 @@
                    <form action="{{route('tracking.destroy', $service)}}" method="post" class="flex justify-between w-1/4" >
                        @csrf
                        <button class="btn btn-error">Delete</button>
-                       {{--                    <a class="btn btn-primary" href="{{route('tracking.edit', $service)}}">Edit Time</a>--}}
+                       <a class="btn btn-primary" href="{{route('tracking.edit', $service)}}">Edit Time</a>
                    </form>
                </div>
            </div>
        </div>
+   @else
+       <p class="py-64 flex justify-center items-center text-2xl">there is no reservation yet!</p>
    @endif
 @endsection
 

@@ -42,7 +42,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('tracking', [TrackingController::class, 'index'])->name('tracking.index');
     Route::post('tracking', [TrackingController::class, 'destroy'])->name('tracking.destroy');
-//    Route::get('tracking', [TrackingController::class, 'edit'])->name('tracking.edit');
+    Route::get('tracking/edit{service}', [TrackingController::class, 'edit'])->name('tracking.edit');
+    Route::post('tracking/edit{service}', [TrackingController::class, 'update'])->name('tracking.update');
     Route::get('manage', [ManageController::class, 'index'])->name('manage.index');
 });
 Route::get('services', [ServiceController::class, 'index'])->name('services.index');

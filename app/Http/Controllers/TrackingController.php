@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\Service;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,8 +20,8 @@ class TrackingController extends Controller
     {
         $user_id = Auth::user()->getAuthIdentifier();
         $user = User::find($user_id);
-        $reserve_id = DB::table('reservation_user')->select('reservation_id')->where('user_id', '=', $user_id);
-        $service_id = DB::table('service_user')->select('service_id')->where('user_id', '=', $user_id);
+        $reserve_id = DB::table('reservation_user')->select('reservation_id')->where('user_id', '=', $user_id)->first()->reservation_id;
+        $service_id = DB::table('service_user')->select('service_id')->where('user_id', '=', $user_id)->first()->service_id;
         $reserved = Reservation::find($reserve_id);
         $service = Service::find($service_id);
         return view('tracking.index', compact('service', 'reserved'));
@@ -53,10 +54,14 @@ class TrackingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Service $service)
     {
-        $service = Service::find($id);
-        return view('tracking.edit', compact("service"));
+        $user_id = Auth::user()->getAuthIdentifier();
+        $reserve_id = DB::table('reservation_user')->select('reservation_id')->where('user_id', '=', $user_id)->first()->reservation_id;
+        $reserve = Reservation::find($reserve_id);
+        $time = Carbon::parse($reserve->start_at);
+        $time = $time->toDateTimeString();
+        return view('dashborad.edit', compact("reserve", 'reserve_id', 'time'));
     }
 
     /**
@@ -64,7 +69,10 @@ class TrackingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        return view('tracking.edit');
+
+        $time = Carbon::parse($request->input()['time'])->toTimeString();
+        Reservation::query()->where('id', '=', $id)->update(['start_at'=>$time]);
+        return Inertia::render('Dashboard');
     }
 
     /**
