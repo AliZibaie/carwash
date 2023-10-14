@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateServiceRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use http\Env\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function Symfony\Component\String\s;
@@ -61,21 +62,25 @@ class ServiceController extends Controller
             $end_at = Carbon::parse($start_at)->addMinutes($service->time_required);
         $code = rand(10000, 100000);
             $reservation = ['start_at'=>$start_at,'end_at'=>$end_at, 'place_id'=>$place, 'code'=>$code];
-            $conflictingReservation = Reservation::query()->where(function ($query) use ($start_at, $end_at) {
-                $query->whereBetween('start_at', [$start_at, $end_at])
-                    ->orWhereBetween('end_at', [$start_at, $end_at]);
-            })->where('day','=', $day,)->where('place_id', '=', $place)->first();
-            $is_open = Schedule::query()->where('open_at' ,'>', $start_at, 'AND', 'close_at', '<', $end_at)->get();
-//            dd($is_open);
-            if ($conflictingReservation){
-               return view('services.index', compact('services', 'days'))->with('fail', ' there is a conflict in reservation time');
-            }
+        if (self::conflictExist($start_at, $end_at, $day, $place)){
+            return view('services.index', compact('services', 'days'))->with('fail', ' there is a conflict in reservation time');
+        }
             Reservation::query()->create($reservation);
             $user_id = Auth::user()->getAuthIdentifier();
             $reservation_id = Reservation::all()->last()->id;
             DB::table('reservation_user')->insert(['reservation_id'=>$reservation_id, 'user_id'=>$user_id]);
         DB::table('service_user')->insert(['service_id'=>$service_id, 'user_id'=>$user_id]);
         return $this->factor($service, $code);
+    }
+
+    public static function conflictExist($start_time, $end_time, $day, $place): Builder|null
+    {
+        return Reservation::query()->where(function ($query) use ($start_time, $end_time) {
+            $query->whereBetween('start_at', [$start_time, $end_time])
+                ->orWhereBetween('end_at', [$start_time, $end_time]);
+        })->where('day','=', $day,)->where('place_id', '=', $place)->first();
+//        $is_open = Schedule::query()->where('open_at' ,'>', $start_at, 'AND', 'close_at', '<', $end_time)->get();
+
     }
     public static function __callStatic(string $name, array $arguments)
     {

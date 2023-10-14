@@ -1,8 +1,10 @@
 ## installation
-1.create .env from .env.example <br>
-2.composer install <br>
-3.npm install <br>
-4.npm run dev <br>
-5.php artisan migrate:fresh --seed <br>
-6.php artisan key:generate <br>
-7.php artisan serve <br>
+<ol>
+<li>create .env from .env.example</li>
+<li>composer install</li>
+<li>npm install</li>
+<li>npm run dev</li>
+<li>php artisan migrate:fresh --seed</li>
+<li>php artisan key:generate </li>
+<li>php artisan serve</li>
+</ol>
