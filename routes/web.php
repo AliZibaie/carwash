@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\ManageController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\Service\ManageController;
+use App\Http\Controllers\Service\ServiceController;
+use App\Http\Controllers\Service\TrackingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('tracking', [TrackingController::class, 'index'])->name('tracking.index');
     Route::post('tracking', [TrackingController::class, 'destroy'])->name('tracking.destroy');
     Route::get('tracking/edit{service}', [TrackingController::class, 'edit'])->name('tracking.edit');
+    Route::get('tracking/factor', [TrackingController::class, 'factor'])->name('tracking.factor');
     Route::post('tracking/edit{service}', [TrackingController::class, 'update'])->name('tracking.update');
     Route::get('manage', [ManageController::class, 'index'])->name('manage.index');
 });

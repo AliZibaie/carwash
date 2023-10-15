@@ -8,6 +8,7 @@
            <div class="card-body">
                <h2 class="card-title">{{$service->name}}</h2>
                <p>price : {{$service->price}}</p>
+               <a class="link link-success" href="{{route('tracking.factor')}}">your factor</a>
                <div class="card-actions justify-end">
                    <form action="{{route('tracking.destroy', $service)}}" method="post" class="flex justify-between w-1/4" >
                        @csrf

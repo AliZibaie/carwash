@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Service;
 
+use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\Service;
 use App\Models\User;
@@ -20,8 +21,8 @@ class TrackingController extends Controller
     {
         $user_id = Auth::user()->getAuthIdentifier();
         $user = User::find($user_id);
-        $reserve_id = DB::table('reservation_user')->select('reservation_id')->where('user_id', '=', $user_id)->first()->reservation_id;
-        $service_id = DB::table('service_user')->select('service_id')->where('user_id', '=', $user_id)->first()->service_id;
+        $reserve_id = DB::table('reservation_user')->select('reservation_id')->where('user_id', '=', $user_id)->first()->reservation_id ?? '';
+        $service_id = DB::table('service_user')->select('service_id')->where('user_id', '=', $user_id)->first()->service_id ?? '';
         $reserved = Reservation::find($reserve_id);
         $service = Service::find($service_id);
         return view('tracking.index', compact('service', 'reserved'));

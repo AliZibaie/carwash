@@ -45,10 +45,11 @@
                                         <option value="{{$day->name}}">{{$day->name}}</option>
                                     @endforeach
                                 </select>
-                                <select class="select select-success w-full max-w-xs" name="place_id">
+                                <select class="select select-success w-full max-w-xs" name="station">
                                     <option disabled selected>Pick a station</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
+                                    @foreach($stations as $station)
+                                        <option value="{{$station->name}}">{{$station->name}}</option>
+                                    @endforeach
                                 </select>
                                 <input type="time" name="time" class="text-black">
                                 <div class="modal-action self-end">
@@ -62,12 +63,15 @@
                     </dialog>
                 </div>
             </div>
-
         @endforeach
+        @error('time')
+        <p class="text-red-700 mx-auto my-4 text-center text-xl w-96">{{$message}}</p>
+        @enderror
         @if(isset($success))
-            <p class="text-green-700"> {{$success}}</p>
-            @elseif(isset($fail))
-                <p class="text-red-700">{{$fail}}</p>
+            <p class="text-green-700 mx-auto my-4 text-center text-xl w-96"> {{$success}}</p>
+        @elseif(isset($fail))
+            <p class="text-red-700 mx-auto my-4 text-center text-xl w-96">{{$fail}}</p>
         @endif
     </div>
+
 @endsection

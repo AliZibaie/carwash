@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Service;
 
-use App\Models\Day;
-use App\Http\Requests\StoreDayRequest;
-use App\Http\Requests\UpdateDayRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-class DayController extends Controller
+class ManageController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return view('manage.index');
     }
 
     /**
@@ -27,7 +26,7 @@ class DayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDayRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -35,7 +34,7 @@ class DayController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Day $day)
+    public function show(string $id)
     {
         //
     }
@@ -43,7 +42,7 @@ class DayController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Day $day)
+    public function edit(string $id)
     {
         //
     }
@@ -51,7 +50,7 @@ class DayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDayRequest $request, Day $day)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -59,7 +58,7 @@ class DayController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Day $day)
+    public function destroy(string $id)
     {
         //
     }

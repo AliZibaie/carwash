@@ -23,9 +23,15 @@ class StoreServiceRequest extends FormRequest
     {
         return [
             'id'=>'required',
-            'time'=>'required',
+            'time'=>'bail|required|after:09:00|before:21:00',
             'day'=>'required',
-            'place_id'=>'required',
+            'station'=>'required',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'time.after' => 'the open time for our Carwash is 9:00',
         ];
     }
 }

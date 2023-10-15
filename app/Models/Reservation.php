@@ -12,8 +12,9 @@ class Reservation extends Model
     protected $fillable =[
         'start_at',
         'end_at',
-        'place_id',
+        'day',
         'code',
+        'station',
     ];
     public function users(): BelongsToMany
     {

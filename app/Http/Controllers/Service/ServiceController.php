@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Service;
 
 use App\enums\DaysEnum;
+use App\enums\StationsEnum;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreServiceRequest;
+use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Reservation;
 use App\Models\Schedule;
 use App\Models\Service;
-use App\Http\Requests\StoreServiceRequest;
-use App\Http\Requests\UpdateServiceRequest;
-use App\Models\User;
 use Carbon\Carbon;
-use http\Env\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use function Symfony\Component\String\s;
+use Nette\Utils\Random;
 
 class ServiceController extends Controller
 {
@@ -25,8 +25,8 @@ class ServiceController extends Controller
     {
         $days = DaysEnum::cases();
         $services = Service::all();
-        $time = Service::all();
-        return view('services.index', compact('services', 'days'));
+        $stations = StationsEnum::cases();
+        return view('services.index', compact('services', 'days', 'stations'));
     }
 
     /**
@@ -49,7 +49,7 @@ class ServiceController extends Controller
      */
     public function store(StoreServiceRequest $request)
     {
-        $place = (int) $request->validated()['place_id'];
+        $place =  $request->validated()['station'];
             $service_id = (int) $request->validated()['id'];
             $service = Service::query()->find($service_id);
             $start_at = $request->validated()['time'];
@@ -58,40 +58,31 @@ class ServiceController extends Controller
             $open_at = Schedule::all()->first()->open_at;
             $close_at = Schedule::all()->first()->close_at;
         $days = DaysEnum::cases();
+        $stations = StationsEnum::cases();
         $services = Service::all();
             $end_at = Carbon::parse($start_at)->addMinutes($service->time_required);
-        $code = rand(10000, 100000);
-            $reservation = ['start_at'=>$start_at,'end_at'=>$end_at, 'place_id'=>$place, 'code'=>$code];
+        $code = Random::generate(10, '0-9');
+            $reservation = ['start_at'=>$start_at,'end_at'=>$end_at, 'station'=>$place, 'code'=>$code, 'day'=>$day, 'service'=>$service];
         if (self::conflictExist($start_at, $end_at, $day, $place)){
-            return view('services.index', compact('services', 'days'))->with('fail', ' there is a conflict in reservation time');
+            return view('services.index', compact('services', 'days', 'stations'))->with('fail', ' there is a conflict in reservation time');
         }
             Reservation::query()->create($reservation);
             $user_id = Auth::user()->getAuthIdentifier();
             $reservation_id = Reservation::all()->last()->id;
             DB::table('reservation_user')->insert(['reservation_id'=>$reservation_id, 'user_id'=>$user_id]);
         DB::table('service_user')->insert(['service_id'=>$service_id, 'user_id'=>$user_id]);
-        return $this->factor($service, $code);
+        return $this->factor($reservation);
     }
 
-    public static function conflictExist($start_time, $end_time, $day, $place): Builder|null
+    public static function conflictExist($start_time, $end_time, $day, $place)
     {
         return Reservation::query()->where(function ($query) use ($start_time, $end_time) {
             $query->whereBetween('start_at', [$start_time, $end_time])
                 ->orWhereBetween('end_at', [$start_time, $end_time]);
-        })->where('day','=', $day,)->where('place_id', '=', $place)->first();
+        })->where('day','=', $day,)->where('station', '=', $place)->first();
 //        $is_open = Schedule::query()->where('open_at' ,'>', $start_at, 'AND', 'close_at', '<', $end_time)->get();
 
     }
-    public static function __callStatic(string $name, array $arguments)
-    {
-        return call_user_func($name);
-    }
-
-    public function factor($service, $code)
-    {
-        return view('factor', compact("service", 'code'));
-    }
-
     /**
      * Display the specified resource.
      */
@@ -122,5 +113,10 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         //
+    }
+
+    public function factor($factor)
+    {
+        return view('tracking.factor', compact('factor'));
     }
 }
